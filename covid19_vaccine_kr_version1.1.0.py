@@ -83,11 +83,11 @@ def get_kr_population(url,data_list):
                 population[results[i]['C1_NM']] = int(results[i]['DT'])
     return population
 
-# API 주소
+# 공공데이터포털-질병관리청_코로나19 예방접종 현황: https://www.data.go.kr/data/15078166/openapi.do
 sido_vaccine_api = 'https://nip.kdca.go.kr/irgd/cov19stats.do?list=sido'
-# ㄴ공공데이터포털-질병관리청_코로나19 예방접종 현황: https://www.data.go.kr/data/15078166/openapi.do
+
+# KOSIS공유서비스: https://kosis.kr/openapi/index/index.jsp
 kr_population_api = f'https://kosis.kr/openapi/Param/statisticsParameterData.do?method=getList&apiKey={kosis_apiKey}=&itmId=T20+&objL1=ALL&objL2=&objL3=&objL4=&objL5=&objL6=&objL7=&objL8=&format=json&jsonVD=Y&prdSe=M&newEstPrdCnt=1&loadGubun=2&orgId=101&tblId=DT_1B040A3'
-# ㄴKOSIS공유서비스: https://kosis.kr/openapi/index/index.jsp
 
 """MAIN PROCESS"""
 todayDate = datetime.today().date()

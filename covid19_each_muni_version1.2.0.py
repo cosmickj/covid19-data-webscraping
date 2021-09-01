@@ -8,7 +8,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
 from configparser import ConfigParser
-# from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
 
 from datetime import datetime
@@ -38,8 +37,6 @@ con_str = f"mysql+mysqldb://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?c
 engine = create_engine(con_str, encoding =CHARSET2)
 
 # 크롬 드라이버 연결 설정
-# ua = UserAgent(use_cache_server=False)
-# user_agent = ua.random
 user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36"
 DRIVER_LOCATION = "/usr/bin/chromedriver"
 BINARY_LOCATION = "/usr/bin/google-chrome"
