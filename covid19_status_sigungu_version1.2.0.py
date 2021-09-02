@@ -1,29 +1,25 @@
 # ! /usr/bin/python3 
-print('Start')
-
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-
-from configparser import ConfigParser
 from bs4 import BeautifulSoup
 
+from configparser import ConfigParser
 from datetime import datetime
-import time
-
 import pandas as pd
+import time
 import json
 import re
 
-from sqlalchemy import create_engine
 import pymysql
 pymysql.install_as_MySQLdb()
+from sqlalchemy import create_engine
 
 # 데이터 베이스 연결 설정
 config = ConfigParser()
-config.read('/ShineMacro/covid19_data_webscraping/config/secret.ini')
+config.read('/ShineMacro/shine_covid19_status/config/secret.ini')
 
 HOSTNAME = config['appmd_db']['HOSTNAME']
 PORT     = int(config['appmd_db']['PORT'])
@@ -33,7 +29,7 @@ DATABASE = config['appmd_db']['DATABASE']
 CHARSET1 = config['appmd_db']['CHARSET1']
 CHARSET2 = config['appmd_db']['CHARSET2']
 
-con_str = f"mysql+mysqldb://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset={CHARSET1}"
+con_str = f'mysql+mysqldb://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset={CHARSET1}'
 engine = create_engine(con_str, encoding =CHARSET2)
 
 # 크롬 드라이버 연결 설정
@@ -48,12 +44,10 @@ options.add_argument("no-sandbox")
 options.add_argument("--disable-extensions")
 options.binary_location = BINARY_LOCATION
 
-driver = webdriver.Chrome(executable_path=DRIVER_LOCATION, options=options)
-
 def check_sigungun_update(dbtable, sido):
     """해당 시도 데이터 베이스 업데이트 날짜 확인"""
     sql = f"SELECT MAX(upd_date) FROM {dbtable} WHERE SIDO = '{sido}';"
-    sql_df = pd.read_sql(sql,con=engine)
+    sql_df = pd.read_sql(sql, con=engine)
     latest_update_date = sql_df.iloc[0,0].date()
     return latest_update_date
 
@@ -100,7 +94,7 @@ def extract_sigungu_name(target_data_html, tag_for_name, sido_kr):
         sigungu_name_list = [sido_kr] # global variable
         return sigungu_name_list
     
-    junky_text_pattern   = ('계','구분','지역', '증감','자치구별(지역별)','코로나19')
+    junky_text_pattern = ('계','구분','지역', '증감','자치구별(지역별)','코로나19')
     data_dummy = target_data_html.select(tag_for_name)
     
     if tag_for_name.startswith('img'):
@@ -127,23 +121,22 @@ def extract_covid19_confirmed(target_data_html, tag_for_covid19, covid19_count_s
     
     return covid19_confirmed_count_list
 
-"""MAIN PROCESS"""
 start_time = time.time()
 
-sido_list = ['seoul','busan','daegu','incheon','gwangju','daejeon','ulsan','sejong','gyeonggi','gangwon','chungbuk','chungnam','jeonbuk','jeonnam','gyeongbuk','gyeongnam','jeju']
-
-with open('/ShineMacro/covid19_data_webscraping/config/covid19_sido_info.json','r',encoding='utf-8') as f:
+"""MAIN PROCESS"""
+with open('/ShineMacro/shine_covid19_status/config/covid19_sido_info.json','r',encoding='utf-8') as f:
     sido_data = json.load(f)
 
 today_date = datetime.today().date()
+driver = webdriver.Chrome(executable_path=DRIVER_LOCATION, options=options)
 
+sido_list = ['seoul','busan','daegu','incheon','gwangju','daejeon','ulsan','sejong','gyeonggi','gangwon','chungbuk','chungnam','jeonbuk','jeonnam','gyeongbuk','gyeongnam','jeju']
 for sido in sido_list:
     try:
         dbtable = 'covid19_kr_by_Municipality'
         sido_kr = sido_data[sido]['sido_kr']
+        
         db_sigungu_latest_update_date = check_sigungun_update(dbtable, sido_kr)
-        print(sido_kr)
-
         if db_sigungu_latest_update_date == today_date:
             print(f'{sido_kr} is already updated in database')
             continue
