@@ -13,6 +13,9 @@ import time
 import json
 import re
 
+import warnings
+warnings.filterwarnings(action='ignore')
+
 import pymysql
 pymysql.install_as_MySQLdb()
 from sqlalchemy import create_engine
@@ -29,8 +32,8 @@ DATABASE = config['appmd_db']['DATABASE']
 CHARSET1 = config['appmd_db']['CHARSET1']
 CHARSET2 = config['appmd_db']['CHARSET2']
 
-con_str = f'mysql+mysqldb://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset={CHARSET1}'
-engine = create_engine(con_str, encoding =CHARSET2)
+con_str = f"mysql+mysqldb://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset={CHARSET1}"
+engine = create_engine(con_str, encoding =CHARSET2, pool_size=20, max_overflow=100)
 
 # 크롬 드라이버 연결 설정
 user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36"
@@ -92,7 +95,6 @@ def extract_target_html(current_html_tag):
 def extract_sigungu_name(target_data_html, tag_for_name, sido_kr):
     if tag_for_name == None:
         """시군구 단위를 제공하지 않음: 대구, 세종, 제주"""
-        if sido_kr == "세종": sido_kr = sido_kr + "시" # database 업데이트 시 삭제
         sigungu_name_list = [sido_kr] # global variable
         return sigungu_name_list
     
@@ -129,7 +131,6 @@ start_time = time.time()
 with open('/ShineMacro/shine_covid19_status/config/covid19_sido_info.json','r',encoding='utf-8') as f:
     sido_data = json.load(f)
 
-today_date = datetime.now().date()
 driver = webdriver.Chrome(executable_path=DRIVER_LOCATION, options=options)
 
 sido_list = ['seoul','busan','daegu','incheon','gwangju','daejeon','ulsan','sejong','gyeonggi','gangwon','chungbuk','chungnam','jeonbuk','jeonnam','gyeongbuk','gyeongnam','jeju']
@@ -137,10 +138,11 @@ for sido in sido_list:
     try:
         sido_kr = sido_data[sido]['sido_kr']
         dbtable = 'covid19_status_sigungu'
-        # db_sigungu_latest_update_date = check_sigungun_update(dbtable, sido_kr)
-        # if db_sigungu_latest_update_date == today_date:
-        #     print(f'{sido_kr} is already updated in database')
-        #     continue
+
+        db_sigungu_latest_update_date = check_sigungun_update(dbtable, sido_kr)
+        if db_sigungu_latest_update_date == datetime.now().date():
+            print(f'{sido_kr} is already updated in database')
+            continue
 
         url = sido_data[sido]['url']
         driver.get(url)
@@ -150,7 +152,7 @@ for sido in sido_list:
         date_element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CSS_SELECTOR, css_selector_for_update_date)))
         update_date = clean_update_date(date_element)
 
-        if update_date != today_date:
+        if update_date != datetime.now().date():
             print(f'{sido_kr} 홈페이지에 코로나 현황이 아직 업데이트 되지 않았습니다.')
             continue
 
