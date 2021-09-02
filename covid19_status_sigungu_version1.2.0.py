@@ -23,7 +23,7 @@ pymysql.install_as_MySQLdb()
 
 # 데이터 베이스 연결 설정
 config = ConfigParser()
-config.read('./config/secret.ini')
+config.read('/ShineMacro/covid19_data_webscraping/config/secret.ini')
 
 HOSTNAME = config['appmd_db']['HOSTNAME']
 PORT     = int(config['appmd_db']['PORT'])
@@ -132,7 +132,7 @@ start_time = time.time()
 
 sido_list = ['seoul','busan','daegu','incheon','gwangju','daejeon','ulsan','sejong','gyeonggi','gangwon','chungbuk','chungnam','jeonbuk','jeonnam','gyeongbuk','gyeongnam','jeju']
 
-with open('./config/covid19_sido_info.json','r',encoding='utf-8') as f:
+with open('/ShineMacro/covid19_data_webscraping/config/covid19_sido_info.json','r',encoding='utf-8') as f:
     sido_data = json.load(f)
 
 today_date = datetime.today().date()
@@ -142,6 +142,7 @@ for sido in sido_list:
         dbtable = 'covid19_kr_by_Municipality'
         sido_kr = sido_data[sido]['sido_kr']
         db_sigungu_latest_update_date = check_sigungun_update(dbtable, sido_kr)
+        print(sido_kr)
 
         if db_sigungu_latest_update_date == today_date:
             print(f'{sido_kr} is already updated in database')
