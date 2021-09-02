@@ -12,7 +12,7 @@ import re
 
 from sqlalchemy import create_engine
 import pymysql
-pymysql.install_as_MySQLdb()
+# pymysql.install_as_MySQLdb()
 
 headers = {'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36'}
 todayDate = datetime.date(datetime.now())
@@ -39,7 +39,7 @@ def mysqlLatestUpd():
     return latest_upd_date
 
 def mysqlUpload(domestic,region):
-    con_str = f"mysql+mysqldb://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset={CHARSET1}"
+    con_str = f"mysql+mysqldb://{USERNAME}:'{PASSWORD}'@{HOSTNAME}:{PORT}/{DATABASE}?charset={CHARSET1}"
     engine = create_engine(con_str, encoding =CHARSET2)
     conn = engine.connect()
     domestic.to_sql(name='covid19_domestic_num', con=conn, if_exists='append',index=False)
