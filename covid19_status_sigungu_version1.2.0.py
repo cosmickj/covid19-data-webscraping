@@ -70,6 +70,8 @@ def get_soup():
 
 def clean_update_date(date_element):
     std = date_element.text.find("기준")
+    if std == -1:
+        std = None
     date_element = date_element.text[:std]
     update_date_text_list = re.findall("\d+.|오전|오후", date_element)
     update_date_text = "".join(update_date_text_list).strip()
@@ -186,7 +188,7 @@ for sido in sido_list:
 
         url = sido_data[sido]["url"]
         driver.get(url)
-        print("hello world")
+
         # 지자체 홈페이지 업데이트 기준 날짜 가져오기
         css_selector_for_update_date = sido_data[sido]["css_selector_for_update_date"]
         date_element = WebDriverWait(driver, 5).until(

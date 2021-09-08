@@ -70,6 +70,8 @@ def get_soup():
 
 def clean_standard_date(date_element):
     std = date_element.text.find("기준")
+    if std == -1:
+        std = None
     date_element = date_element.text[:std]
     update_date_text_list = re.findall("\d+.|오전|오후", date_element)
     update_date_text = "".join(update_date_text_list).strip()
@@ -193,6 +195,7 @@ for sido in sido_list:
         date_element = WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, css_selector_for_update_date))
         )
+
         standard_date = clean_standard_date(date_element)
 
         if standard_date != datetime.now().date():
