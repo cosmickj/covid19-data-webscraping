@@ -49,6 +49,7 @@ options.add_argument("no-sandbox")
 options.add_argument("--disable-extensions")
 options.binary_location = BINARY_LOCATION
 
+driver = webdriver.Chrome(executable_path=DRIVER_LOCATION, options=options)
 
 def check_sigungun_update(dbtable, sido):
     """해당 시도 데이터 베이스 업데이트 날짜 확인"""
@@ -154,8 +155,6 @@ with open(
     encoding="utf-8",
 ) as f:
     sido_data = json.load(f)
-
-driver = webdriver.Chrome(executable_path=DRIVER_LOCATION, options=options)
 
 sido_list = [
     "seoul",
