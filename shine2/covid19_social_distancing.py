@@ -11,17 +11,13 @@ from configparser import ConfigParser
 
 from datetime import datetime
 import pandas as pd
-import time
-import json
-import re
-
 import warnings
 
 warnings.filterwarnings(action="ignore")
 
 # 데이터 베이스 연결 설정
 config = ConfigParser()
-config.read("/ShineMacro/shine_covid19_status/config/secret.ini")
+config.read("../config/secret.ini")
 
 HOSTNAME = config["appmd_db"]["HOSTNAME"]
 PORT = int(config["appmd_db"]["PORT"])
@@ -52,29 +48,38 @@ social_distancing_url = "http://ncov.mohw.go.kr/regSocdisBoardView.do?brdId=6&br
 driver.get(social_distancing_url)
 
 html = driver.page_source
-soup = BeautifulSoup(html,'html.parser')
+soup = BeautifulSoup(html, "html.parser")
 
-raw_date_element = soup.select_one('div.timetable p.info span').text
-raw_date_element = raw_date_element.strip().replace('시',':00')
-raw_date_element = str(datetime.today().year) + '.' + raw_date_element
+raw_date_element = soup.select_one("div.timetable p.info span").text
+raw_date_element = raw_date_element.strip().replace("시", ":00")
+raw_date_element = str(datetime.today().year) + "." + raw_date_element
 standard_date = pd.to_datetime(raw_date_element)
 
-social_distancing_map = soup.find('div',id='main_maplayout')
+select_latest_standard_date_query = "SELECT DATE(MAX(standard_date)) FROM covid19_social_distancing"
+latest_standard_date = pd.read_sql(
+    select_latest_standard_date_query,
+    con=engine.connect(),
+).iloc[0, 0]
 
-sido_list = []
-status_list = []
+if standard_date.date() > latest_standard_date:
+    social_distancing_map = soup.find("div", id="main_maplayout")
 
-for sido in social_distancing_map.select('span.name'):
-    sido_list.append(sido.text[:2])
+    sido_list = []
+    status_list = []
 
-for status in social_distancing_map.select('span.num'):
-    status_list.append(status.text)
+    for sido in social_distancing_map.select("span.name"):
+        sido_list.append(sido.text[:2])
 
-covid19_social_distancing = pd.DataFrame()
-covid19_social_distancing['sido'] = sido_list
-covid19_social_distancing['status'] = status_list
-covid19_social_distancing['standard_date'] = standard_date
+    for status in social_distancing_map.select("span.num"):
+        status_list.append(status.text)
 
-driver.quit()
+    covid19_social_distancing = pd.DataFrame()
+    covid19_social_distancing["sido"] = sido_list
+    covid19_social_distancing["status"] = status_list
+    covid19_social_distancing["standard_date"] = standard_date
 
-covid19_social_distancing.to_sql(name="covid19_social_distancing", con=engine.connect(), if_exists="append", index=False)
+    driver.quit()
+
+    covid19_social_distancing.to_sql(
+        name="covid19_social_distancing", con=engine.connect(), if_exists="append", index=False
+    )

@@ -24,7 +24,7 @@ from sqlalchemy import create_engine
 
 # 데이터 베이스 연결 설정
 config = ConfigParser()
-config.read("/ShineMacro/shine_covid19_status/config/secret.ini")
+config.read("./config/secret.ini")
 
 HOSTNAME = config["appmd_db"]["HOSTNAME"]
 PORT = int(config["appmd_db"]["PORT"])
@@ -150,7 +150,7 @@ def extract_covid19_confirmed(target_data_html, tag_for_covid19, covid19_count_s
 start_time = time.time()
 
 """MAIN PROCESS"""
-with open("/ShineMacro/shine_covid19_status/config/covid19_sido_info.json", "r", encoding="utf-8") as f:
+with open("./config/covid19_sido_info.json", "r", encoding="utf-8") as f:
     sido_data = json.load(f)
 
 today_date = datetime.today().date()

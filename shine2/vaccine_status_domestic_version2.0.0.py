@@ -1,11 +1,11 @@
 # ! /usr/bin/python3
-from configparser import ConfigParser
 from datetime import datetime, timedelta
 import pandas as pd
 import xmltodict
 import requests
 import json
 
+from configparser import ConfigParser
 from sqlalchemy import create_engine
 import pymysql
 
@@ -13,7 +13,7 @@ pymysql.install_as_MySQLdb()
 
 # Database setting
 config = ConfigParser()
-config.read("/ShineMacro/shine_covid19_status/config/secret.ini")
+config.read("../config/secret.ini")
 
 HOSTNAME = config["appmd_db"]["HOSTNAME"]
 PORT = int(config["appmd_db"]["PORT"])

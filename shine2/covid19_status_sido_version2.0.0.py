@@ -5,11 +5,12 @@ from datetime import datetime
 import pandas as pd
 import re
 
-import pymysql
 from configparser import ConfigParser
+import pymysql
 
 config = ConfigParser()
-config.read("/ShineMacro/shine_covid19_status/config/secret.ini")
+config.read("../config/secret.ini")
+
 HOSTNAME = config["appmd_db"]["HOSTNAME"]
 PORT = int(config["appmd_db"]["PORT"])
 USERNAME = config["appmd_db"]["USERNAME"]

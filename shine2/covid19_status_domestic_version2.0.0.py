@@ -9,7 +9,8 @@ import pymysql
 from configparser import ConfigParser
 
 config = ConfigParser()
-config.read("/ShineMacro/shine_covid19_status/config/secret.ini")
+config.read("../config/secret.ini")
+
 HOSTNAME = config["appmd_db"]["HOSTNAME"]
 PORT = int(config["appmd_db"]["PORT"])
 USERNAME = config["appmd_db"]["USERNAME"]

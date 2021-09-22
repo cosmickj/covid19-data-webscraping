@@ -24,7 +24,7 @@ from sqlalchemy import create_engine
 
 # 데이터 베이스 연결 설정
 config = ConfigParser()
-config.read("/ShineMacro/shine_covid19_status/config/secret.ini")
+config.read("../config/secret.ini")
 
 HOSTNAME = config["appmd_db"]["HOSTNAME"]
 PORT = int(config["appmd_db"]["PORT"])
@@ -50,6 +50,7 @@ options.add_argument("--disable-extensions")
 options.binary_location = BINARY_LOCATION
 
 driver = webdriver.Chrome(executable_path=DRIVER_LOCATION, options=options)
+
 
 def check_sigungun_update(dbtable, sido):
     """해당 시도 데이터 베이스 업데이트 날짜 확인"""
@@ -150,7 +151,7 @@ start_time = time.time()
 
 """MAIN PROCESS"""
 with open(
-    "/ShineMacro/shine_covid19_status/config/covid19_sido_info.json",
+    "../config/covid19_sido_info.json",
     "r",
     encoding="utf-8",
 ) as f:
@@ -188,6 +189,7 @@ for sido in sido_list:
 
         url = sido_data[sido]["url"]
         driver.get(url)
+        driver.refresh()
 
         # 지자체 홈페이지 업데이트 기준 날짜 가져오기
         css_selector_for_update_date = sido_data[sido]["css_selector_for_update_date"]
