@@ -50,6 +50,7 @@ options.add_argument("--disable-extensions")
 options.binary_location = BINARY_LOCATION
 
 driver = webdriver.Chrome(executable_path=DRIVER_LOCATION, options=options)
+driver.implicitly_wait(3)
 
 
 def check_sigungun_update(dbtable, sido):
