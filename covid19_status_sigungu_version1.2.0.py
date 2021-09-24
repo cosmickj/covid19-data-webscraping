@@ -188,6 +188,7 @@ for sido in sido_list:
 
         url = sido_data[sido]["url"]
         driver.get(url)
+        driver.refresh()
 
         # 지자체 홈페이지 업데이트 기준 날짜 가져오기
         css_selector_for_update_date = sido_data[sido]["css_selector_for_update_date"]
